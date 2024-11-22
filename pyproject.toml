@@ -19,6 +19,7 @@ uvicorn = "^0.32.1"
 python-nmap = "^0.7.1"
 faststream = {extras = ["nats"], version = "^0.5.30"}
 aiohttp = "^3.11.7"
+websockets = "^14.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
