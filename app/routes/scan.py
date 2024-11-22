@@ -14,6 +14,7 @@ from schemas.scan_api import (
     Vulnerability,
 )
 from schemas.scan_query import ScanStart
+from app.socket import sio
 
 router = APIRouter()
 
@@ -29,12 +30,14 @@ async def start_scan(
         ScanStart(task_id=task_id, ips=scan_request.targets),
         subject="scan-start",
     )
+    # Emit a Socket.IO event when the scan starts
+    await sio.emit('scan_started', {'task_id': task_id})
     return ScanResponse(task_id=task_id)
-
 
 @router.get("/scan/{task_id}")
 @inject
 async def get_scan(task_id: str) -> ScanTaskResponse:
+    await sio.emit('scan_completed', {'task_id': task_id})
     return ScanTaskResponse(
         task_id=task_id,
         ptr="ptr string",
