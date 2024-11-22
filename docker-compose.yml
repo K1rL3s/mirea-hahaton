@@ -6,9 +6,12 @@ x-local: &local
     PYTHONDONTWRITEBYTECODE: 1
   links:
     - database
+    - nats
   depends_on:
     database:
       condition: service_healthy
+    nats:
+      contidtion: service_started
 #    migrations:
 #      condition: service_completed_successfully
 
