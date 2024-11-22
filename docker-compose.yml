@@ -9,8 +9,8 @@ x-local: &local
   depends_on:
     database:
       condition: service_healthy
-    migrations:
-      condition: service_completed_successfully
+#    migrations:
+#      condition: service_completed_successfully
 
 
 services:
@@ -21,9 +21,18 @@ services:
     build:
       context: .
       dockerfile: ./app/Dockerfile
+    ports:
+      - "8000:8000"
+
+  query:
+    <<: *local
+    container_name: mirea-hahaton-query
+    build:
+      context: .
+      dockerfile: ./query/Dockerfile
 
   database:
-    container_name: mirea-hahaton-db
+    container_name: mirea-hahaton-database
     image: postgres:16.4-alpine3.20
     restart: unless-stopped
     volumes:
@@ -39,6 +48,22 @@ services:
       timeout: 5s
       retries: 5
       start_period: 5s
+    ports:
+      - "5432:5432"
+
+  nats:
+    container_name: mirea-hahaton-nats
+    image: nats:2.10-alpine
+    restart: unless-stopped
+    volumes:
+      - ./nats.conf:/etc/nats/nats.conf
+      - mirea-hahaton-volume:/data
+    ports:
+      - "4222:4222" # client port
+      - "6222:6222" # cluster port
+      - "8222:8222" # monitoring port
+    command: -c /etc/nats/nats.conf
+
 
 volumes:
   mirea-hahaton-volume:
