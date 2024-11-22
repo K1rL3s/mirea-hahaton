@@ -11,7 +11,7 @@ x-local: &local
     database:
       condition: service_healthy
     nats:
-      contidtion: service_started
+      condition: service_started
 #    migrations:
 #      condition: service_completed_successfully
 
