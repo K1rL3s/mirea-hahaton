@@ -1,0 +1,44 @@
+x-local: &local
+  restart: unless-stopped
+  env_file: .env
+  environment:
+    PYTHONUNBUFFERED: 1
+    PYTHONDONTWRITEBYTECODE: 1
+  links:
+    - database
+  depends_on:
+    database:
+      condition: service_healthy
+    migrations:
+      condition: service_completed_successfully
+
+
+services:
+
+  api:
+    <<: *local
+    container_name: mirea-hahaton-api
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+
+  database:
+    container_name: mirea-hahaton-db
+    image: postgres:16.4-alpine3.20
+    restart: unless-stopped
+    volumes:
+      - mirea-hahaton-volume:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  mirea-hahaton-volume:
