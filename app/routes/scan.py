@@ -8,10 +8,11 @@ from faststream.nats import NatsBroker
 from schemas.scan_api import ScanRequest, ScanResponse
 from schemas.scan_query import ScanInput
 
-from fastapi_socketio import SocketManager
+import socketio
 
 router = APIRouter()
-sio = SocketManager()
+sio = socketio.AsyncServer(async_mode='asgi')
+sio_app = socketio.ASGIApp(sio)
 
 
 @router.post("/scan/")

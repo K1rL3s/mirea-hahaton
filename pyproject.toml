@@ -20,7 +20,6 @@ python-nmap = "^0.7.1"
 faststream = {extras = ["nats"], version = "^0.5.30"}
 aiohttp = "^3.11.7"
 python-socketio = "^5.11.4"
-fastapi-socketio = "^0.0.10"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"
