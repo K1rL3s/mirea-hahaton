@@ -5,8 +5,7 @@ from fastapi import FastAPI
 
 from app.routes import include_routers
 from di.container import make_container
-
-import socketio
+from .sockets import sio_app
 
 
 @asynccontextmanager
@@ -22,7 +21,6 @@ def create_app() -> FastAPI:
     container = make_container(extra_providers=[FastapiProvider()])
     setup_dishka(container, app)
 
-    sio = socketio.AsyncServer(async_mode='asgi')
-    app.mount('/socket.io', socketio.ASGIApp(sio))
+    app.mount('/', app=sio_app)
 
     return app

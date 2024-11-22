@@ -1,25 +1,24 @@
 import uuid
+from asyncio import sleep
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
 from faststream.nats import NatsBroker
 
+from app.sockets import sio
 from schemas.scan_api import ScanRequest, ScanResponse
 from schemas.scan_query import ScanInput
 
-import socketio
 
 router = APIRouter()
-sio = socketio.AsyncServer(async_mode='asgi')
-sio_app = socketio.ASGIApp(sio)
 
 
 @router.post("/scan/")
 @inject
 async def start_scan(
-    scan_request: ScanRequest,
-    broker: FromDishka[NatsBroker],
+        scan_request: ScanRequest,
+        broker: FromDishka[NatsBroker],
 ) -> ScanResponse:
     task_id = str(uuid.uuid4())
     scan = ScanInput(task_id=task_id, message=str(scan_request.targets))
