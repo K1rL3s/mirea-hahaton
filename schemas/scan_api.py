@@ -1,3 +1,5 @@
+from pydantic import Field
+
 from schemas.base import BaseSchema
 
 
@@ -17,10 +19,11 @@ class Vulnerability(BaseSchema):
 
 class PortSchema(BaseSchema):
     port: int
+    type: str | None = None
     protocol: str | None = None
     service: str | None = None
     version: str | None = None
-    vulnerabilities: list[Vulnerability] = None
+    vulnerabilities: list[Vulnerability] = Field(default_factory=list)
 
 
 class PortsSchema(BaseSchema):
@@ -28,7 +31,13 @@ class PortsSchema(BaseSchema):
     closed: list[int]
 
 
-class ScanTaskResponse(BaseSchema):
-    task_id: str
+class IpSchema(BaseSchema):
+    ip: str
     ptr: str
     ports: PortsSchema
+
+
+class ScanTaskResponse(BaseSchema):
+    task_id: str
+    end: bool
+    ips: list[IpSchema]

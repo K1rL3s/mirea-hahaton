@@ -5,14 +5,8 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter
 from faststream.nats import NatsBroker
 
-from schemas.scan_api import (
-    PortSchema,
-    PortsSchema,
-    ScanRequest,
-    ScanResponse,
-    ScanTaskResponse,
-    Vulnerability,
-)
+from app.routes.randomizer import random_ips
+from schemas.scan_api import ScanRequest, ScanResponse, ScanTaskResponse
 from schemas.scan_query import ScanStart
 
 router = APIRouter()
@@ -37,23 +31,6 @@ async def start_scan(
 async def get_scan(task_id: str) -> ScanTaskResponse:
     return ScanTaskResponse(
         task_id=task_id,
-        ptr="ptr string",
-        ports=PortsSchema(
-            closed=[1, 2, 3, 4, 5],
-            open=[
-                PortSchema(
-                    port=22,
-                    protocol="protocol",
-                    service="service",
-                    version="version",
-                    vulnerabilities=[
-                        Vulnerability(
-                            title="title",
-                            description="description",
-                            severity="severity",
-                        ),
-                    ],
-                ),
-            ],
-        ),
+        end=False,
+        ips=random_ips(),
     )

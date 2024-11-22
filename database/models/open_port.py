@@ -15,11 +15,12 @@ class OpenPort(BaseAlchemyModel):
     __tablename__ = "open_ports"
 
     id: Mapped[UUID4] = mapped_column(ForeignKey("scan_results.id"), primary_key=True)
-    port: Mapped[int] = mapped_column(Integer, nullable=False, primary_key=True)
-
-    protocol: Mapped[str] = mapped_column(String, nullable=False)
-    service: Mapped[str] = mapped_column(String)
-    version: Mapped[str] = mapped_column(String)
+    ip: Mapped[str] = mapped_column(String(16), primary_key=True)
+    port: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type: Mapped[str] = mapped_column(String(36))
+    protocol: Mapped[str] = mapped_column(String(36))
+    service: Mapped[str] = mapped_column(String(256))
+    version: Mapped[str] = mapped_column(String(128))
 
     scan_result: Mapped["ScanResult"] = relationship(
         "ScanResult",
