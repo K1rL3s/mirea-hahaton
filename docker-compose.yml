@@ -20,16 +20,18 @@ services:
     container_name: mirea-hahaton-api
     build:
       context: .
-      dockerfile: ./app/Dockerfile
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    command: python -m app
 
   query:
     <<: *local
     container_name: mirea-hahaton-query
     build:
       context: .
-      dockerfile: ./query/Dockerfile
+      dockerfile: Dockerfile
+    command: python -m query
 
   database:
     container_name: mirea-hahaton-database

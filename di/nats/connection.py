@@ -19,5 +19,6 @@ class NatsProvider(Provider):
     ) -> AsyncIterable[NatsBroker]:
         broker = NatsBroker(str(nats_config.nats_url))
         include_routers(broker)
+        await broker.connect()
         yield broker
         await broker.close()
