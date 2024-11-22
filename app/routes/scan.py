@@ -8,7 +8,10 @@ from faststream.nats import NatsBroker
 from schemas.scan_api import ScanRequest, ScanResponse
 from schemas.scan_query import ScanInput
 
+from fastapi_socketio import SocketManager
+
 router = APIRouter()
+sio = SocketManager()
 
 
 @router.post("/scan/")
@@ -20,9 +23,11 @@ async def start_scan(
     task_id = str(uuid.uuid4())
     scan = ScanInput(task_id=task_id, message=str(scan_request.targets))
     await broker.publish(scan, subject="scan-input")
+    await sio.emit('scan-started', {'task_id': task_id})
     return ScanResponse(task_id=task_id)
 
 
 @router.get("/results/{task_id}")
 async def get_scan_results(task_id: str) -> str:
+    await sio.emit('scan-results', {'task_id': task_id, 'results': 'TODO: Results'})
     return task_id

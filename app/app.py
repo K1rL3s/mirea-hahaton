@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from app.routes import include_routers
 from di.container import make_container
 
+from fastapi_socketio import SocketManager
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -19,5 +21,8 @@ def create_app() -> FastAPI:
 
     container = make_container(extra_providers=[FastapiProvider()])
     setup_dishka(container, app)
+
+    sio = SocketManager(app=app)
+    app.sio = sio
 
     return app
