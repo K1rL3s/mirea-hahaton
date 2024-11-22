@@ -6,7 +6,7 @@ from fastapi import APIRouter
 from faststream.nats import NatsBroker
 
 from schemas.scan_api import ScanRequest, ScanResponse
-from schemas.scan_query import ScanInput
+from schemas.scan_query import ScanStart
 
 router = APIRouter()
 
@@ -18,11 +18,14 @@ async def start_scan(
     broker: FromDishka[NatsBroker],
 ) -> ScanResponse:
     task_id = str(uuid.uuid4())
-    scan = ScanInput(task_id=task_id, message=str(scan_request.targets))
-    await broker.publish(scan, subject="scan-input")
+    await broker.publish(
+        ScanStart(task_id=task_id, ips=scan_request.targets),
+        subject="scan-start",
+    )
     return ScanResponse(task_id=task_id)
 
 
-@router.get("/results/{task_id}")
-async def get_scan_results(task_id: str) -> str:
-    return task_id
+@router.get("/scan/{task_id}")
+@inject
+async def get_scan(task_id: str) -> ScanResponse:
+    return ScanResponse(task_id=task_id)

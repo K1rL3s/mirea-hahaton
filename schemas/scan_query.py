@@ -1,11 +1,17 @@
 from schemas.base import BaseSchema
 
 
-class ScanInput(BaseSchema):
+class ScanStart(BaseSchema):
     task_id: str
-    message: str
+    ips: list[str]
 
 
-class ScanOutput(BaseSchema):
+class ScanIP(BaseSchema):
     task_id: str
-    message: str
+    ip: str
+
+
+class ScanPort(BaseSchema):
+    task_id: str
+    ip: str
+    port: int
