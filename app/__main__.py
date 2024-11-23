@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(lifespan=lifespan)
+    app = FastAPI(lifespan=lifespan, root_path="/api")
     include_routers(app)
     app.add_middleware(
         CORSMiddleware,  # type: ignore
