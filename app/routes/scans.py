@@ -91,7 +91,7 @@ async def get_last_scan(
     ]
 
 
-@router.get("/scans/{task_id}")
+@router.get("/scans/{task_id}/")
 @inject
 async def get_scan(task_id: str) -> ScanTaskResponse:
     return ScanTaskResponse(

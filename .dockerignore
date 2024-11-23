@@ -30,7 +30,9 @@
 **/pip-delete-this-directory.txt
 **/pip-log.txt
 **/venv
+**/.venv
 **/Dockerfile
 **/README.md
 **/docker-compose.yml
 **/poetry.lock
+**/.env.example
