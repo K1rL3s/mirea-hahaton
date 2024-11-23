@@ -7,7 +7,7 @@ from database.models.base import BaseAlchemyModel
 
 
 # TODO: попробовать as_uuid=False и селект не с uuid'ом
-class OpenPort(BaseAlchemyModel):
+class ScanPortModel(BaseAlchemyModel):
     __tablename__ = "open_ports"
 
     id: Mapped[UUID4] = mapped_column(UUID(as_uuid=True), primary_key=True)

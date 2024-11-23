@@ -8,7 +8,7 @@ from database.models.base import BaseAlchemyModel
 
 
 # TODO: попробовать as_uuid=False и селект не с uuid'ом
-class ScanResult(BaseAlchemyModel):
+class ScanResultModel(BaseAlchemyModel):
     __tablename__ = "scan_results"
 
     id: Mapped[UUID4] = mapped_column(UUID(as_uuid=True), primary_key=True)

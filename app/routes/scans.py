@@ -10,7 +10,7 @@ from app.errors.scans import InvalidIP, InvalidIPCIDR, InvalidIPRange
 from app.routes.randomizer import random_ips
 from database.repos.scan_result import ScanResultRepo
 from schemas.scan_api import LastScans, ScanRequest, ScanResponse, ScanTaskResponse
-from schemas.scan_query import ScanStart
+from schemas.scan_query import ScanStartSchema
 from utils.ip_validate import convert_ip
 
 router = APIRouter()
@@ -30,7 +30,7 @@ async def start_scan(
 
     if isinstance(ips, (IPv4Address, IPv6Address)):
         await broker.publish(
-            ScanStart(
+            ScanStartSchema(
                 task_id=task_id,
                 ips=[str(ips)],
                 ipv6=isinstance(ips, IPv6Address),
@@ -41,7 +41,7 @@ async def start_scan(
         if ips.num_addresses > 32:
             raise InvalidIPCIDR
         await broker.publish(
-            ScanStart(
+            ScanStartSchema(
                 task_id=task_id,
                 ips=[str(ip) for ip in ips],
                 ipv6=isinstance(ips, IPv6Network),
@@ -60,12 +60,19 @@ async def start_scan(
             left += 1
 
         await broker.publish(
-            ScanStart(task_id=task_id, ips=[str(ip) for ip in ip_range], ipv6=False),
+            ScanStartSchema(
+                task_id=task_id,
+                ips=[str(ip) for ip in ip_range],
+                ipv6=False,
+            ),
             subject="scan-start",
         )
     elif isinstance(ips, list):
+        if len(ips) > 32:
+            raise InvalidIPRange
+
         await broker.publish(
-            ScanStart(
+            ScanStartSchema(
                 task_id=task_id,
                 ips=[str(ip) for ip in ips],
                 ipv6=isinstance(ips[0], IPv6Address),

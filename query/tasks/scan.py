@@ -1,31 +1,56 @@
+import asyncio
+
+from dishka import FromDishka
+from dishka.integrations.faststream import inject
 from faststream.nats import NatsRouter
 from faststream.nats.annotations import NatsBroker
 
-from schemas.scan_query import ScanIP, ScanPort, ScanStart
+from database.repos.scan_port import ScanPortsRepo
+from database.repos.scan_result import ScanResultRepo
+from query.utils.nmap import read_nmap_stream, search_top_command
+from schemas.scan_query import (
+    ScanIPSchema,
+    ScanPortSchema,
+    ScanResultSchema,
+    ScanStartSchema,
+)
 
 router = NatsRouter()
 
 
 @router.subscriber(subject="scan-start")
-async def scan_start_handler(scan_start: ScanStart, broker: NatsBroker) -> None:
+async def scan_start_handler(scan_start: ScanStartSchema, broker: NatsBroker) -> None:
     for ip in scan_start.ips:
         await broker.publish(
-            message=ScanIP(task_id=scan_start.task_id, ip=ip),
+            message=ScanIPSchema(task_id=scan_start.task_id, ip=ip),
             subject="scan-ip",
         )
 
 
 @router.subscriber(subject="scan-ip")
-async def scan_ip_handler(scan_ip: ScanIP, broker: NatsBroker) -> None:
+async def scan_ip_handler(scan_ip: ScanIPSchema, broker: NatsBroker) -> None:
     # TODO: сюда можно засунуть вызов nmap'а и публиковать результаты по портам
-    for port in range(1, 100):
-        await broker.publish(
-            message=ScanPort(task_id=scan_ip.task_id, ip=scan_ip.ip, port=port),
-            subject="scan-ip-port",
-        )
+    process = await asyncio.create_subprocess_exec(
+        *(search_top_command(scan_ip, 100).split()),  # TODO: Возможность выбора команд
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE,
+    )
+    await read_nmap_stream(process.stdout, broker, scan_ip)
 
 
 @router.subscriber(subject="scan-ip-port")
-async def scan_ip_port_handler(scan_ip_port: ScanPort) -> None:
-    # TODO: добавлять в редис/постгрю инфу о просканенном порте
-    print(scan_ip_port)
+@inject
+async def scan_ip_port_handler(
+    scan_ip_port: ScanPortSchema,
+    open_ports: FromDishka[ScanPortsRepo],
+) -> None:
+    await open_ports.create_or_update_from_scan_port_schema(scan_ip_port)
+
+
+@router.subscriber(subject="scan-ip-final")
+@inject
+async def scan_ip_final_handler(
+    scan_ip_hostname: ScanResultSchema,
+    scan_repo: FromDishka[ScanResultRepo],
+) -> None:
+    await scan_repo.create_from_scan_result_schema(scan_ip_hostname)
