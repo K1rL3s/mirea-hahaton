@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import Field
 
 from schemas.base import BaseSchema
@@ -41,3 +43,9 @@ class ScanTaskResponse(BaseSchema):
     task_id: str
     end: bool
     ips: list[IpSchema]
+
+
+class LastScans(BaseSchema):
+    task_id: str
+    ip: str
+    updated_at: datetime.datetime

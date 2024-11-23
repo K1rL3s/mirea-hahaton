@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.repos.open_port import OpenPortsRepo
 from database.repos.scan_result import ScanResultRepo
+from database.repos.vuls import VulsRepo
 
 
 class ReposProvider(Provider):
@@ -13,3 +14,7 @@ class ReposProvider(Provider):
     @provide(scope=Scope.REQUEST)
     def scan_results(self, session: AsyncSession) -> ScanResultRepo:
         return ScanResultRepo(session)
+
+    @provide(scope=Scope.REQUEST)
+    def vuls(self, session: AsyncSession) -> VulsRepo:
+        return VulsRepo(session)

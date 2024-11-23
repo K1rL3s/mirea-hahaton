@@ -14,7 +14,7 @@ x-local: &local
     database:
       condition: service_healthy
     nats:
-      condition: service_started
+      condition: service_healthy
     migrations:
       condition: service_completed_successfully
 
@@ -74,11 +74,17 @@ services:
     volumes:
       - ./nats.conf:/etc/nats/nats.conf
       - mirea-hahaton-volume:/data
+    healthcheck:
+      test: wget http://localhost:8222/healthz -q -S -O -
+      interval: 14s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     ports:
       - "4222:4222" # client port
       - "6222:6222" # cluster port
       - "8222:8222" # monitoring port
-    command: -c /etc/nats/nats.conf
+    command: -c /etc/nats/nats.conf -m 8222
 
 
 volumes:
