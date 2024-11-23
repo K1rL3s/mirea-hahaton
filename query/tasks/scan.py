@@ -19,8 +19,14 @@ router = NatsRouter()
 
 
 @router.subscriber(subject="scan-start")
-async def scan_start_handler(scan_start: ScanStartSchema, broker: NatsBroker) -> None:
+@inject
+async def scan_start_handler(
+        scan_start: ScanStartSchema,
+        broker: NatsBroker,
+        scan_repo: FromDishka[ScanResultRepo]
+) -> None:
     for ip in scan_start.ips:
+        await scan_repo.create(uuid=scan_start.task_id, ip=ip)
         await broker.publish(
             message=ScanIPSchema(task_id=scan_start.task_id, ip=ip),
             subject="scan-ip",
@@ -53,4 +59,4 @@ async def scan_ip_final_handler(
     scan_ip_hostname: ScanResultSchema,
     scan_repo: FromDishka[ScanResultRepo],
 ) -> None:
-    await scan_repo.create_from_scan_result_schema(scan_ip_hostname)
+    await scan_repo.update_from_scan_result_schema(scan_ip_hostname)

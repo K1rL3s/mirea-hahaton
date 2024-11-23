@@ -1,5 +1,6 @@
 from uuid import UUID as UUID4
 
+import sqlalchemy
 from sqlalchemy import select
 
 from database.models.scan_result import ScanResultModel
@@ -10,11 +11,13 @@ from schemas.scan_query import ScanResultSchema
 class ScanResultRepo(BaseAlchemyRepo):
     async def create(
         self,
-        uuid: UUID4,
+        uuid: UUID4 | str,
         ip: str,
-        ptr_record: str,
-        severity: str,
+        ptr_record: str | None = None,
+        severity: str | None = None,
     ) -> ScanResultModel:
+        if isinstance(uuid, str):
+            uuid = UUID4(uuid)
         scan = ScanResultModel(id=uuid, ip=ip, ptr_record=ptr_record, severity=severity)
         self.session.add(scan)
         await self.session.commit()
@@ -47,16 +50,21 @@ class ScanResultRepo(BaseAlchemyRepo):
         result = await self.session.scalars(query)
         return list(result)
 
-    async def create_from_scan_result_schema(
+    async def update_from_scan_result_schema(
         self,
         scan_result_schema: ScanResultSchema,
-    ) -> ScanResultModel:
-        result = ScanResultModel(
-            id=UUID4(scan_result_schema.task_id),
-            ip=scan_result_schema.ip,
-            ptr_record=scan_result_schema.ptr_record,
-            severity=scan_result_schema.severity,
+    ) -> None:
+        query = (
+            sqlalchemy.update(ScanResultModel)
+            .where(
+                ScanResultModel.id == UUID4(scan_result_schema.task_id),
+                ScanResultModel.ip == scan_result_schema.ip,
+            )
+            .values(
+                ptr_record=scan_result_schema.ptr_record,
+                severity=scan_result_schema.severity,
+            )
         )
-        self.session.add(result)
+
+        await self.session.execute(query)
         await self.session.commit()
-        return result
