@@ -34,4 +34,3 @@ class OpenPortsRepo(BaseAlchemyRepo):
         query = select(OpenPort).where(OpenPort.ip == ip, OpenPort.id == uuid)
         ports = await self.session.scalars(query)
         return list(ports)
-

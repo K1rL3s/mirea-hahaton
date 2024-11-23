@@ -13,12 +13,15 @@ loguru = "^0.7.2"
 sqlalchemy = "^2.0.36"
 alembic = "^1.14.0"
 dishka = "^1.4.1"
-psycopg = {extras = ["binary"], version = "^3.2.3"}
+psycopg = { extras = ["binary"], version = "^3.2.3" }
 pydantic-settings = "^2.6.1"
 uvicorn = "^0.32.1"
-python-nmap = "^0.7.1"
-faststream = {extras = ["nats"], version = "^0.5.30"}
+faststream = { extras = ["nats"], version = "^0.5.30" }
 aiohttp = "^3.11.7"
+apscheduler = "^3.10.4"
+uvloop = { version = "^0.21.0", markers = "sys_platform == 'linux' or sys_platform == 'darwin'"}
+pandas = "^2.2.3"
+openpyxl = "^3.1.5"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.10.0"

@@ -19,6 +19,7 @@ RUN poetry config virtualenvs.create false && \
 
 COPY ./app ./app
 COPY ./query ./query
+COPY ./scheduler ./scheduler
 COPY ./database ./database
 COPY ./di ./di
 COPY ./migrations ./migrations

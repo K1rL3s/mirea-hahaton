@@ -11,7 +11,7 @@ class ScanResponse(BaseSchema):
     task_id: str
 
 
-class Vulnerability(BaseSchema):
+class VulnerabilitySchema(BaseSchema):
     title: str | None = None
     description: str | None = None
     severity: str | None = None
@@ -23,7 +23,7 @@ class PortSchema(BaseSchema):
     protocol: str | None = None
     service: str | None = None
     version: str | None = None
-    vulnerabilities: list[Vulnerability] = Field(default_factory=list)
+    vulnerabilities: list[VulnerabilitySchema] = Field(default_factory=list)
 
 
 class PortsSchema(BaseSchema):

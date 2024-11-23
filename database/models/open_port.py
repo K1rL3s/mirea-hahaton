@@ -1,10 +1,9 @@
 from uuid import UUID as UUID4
 
-from sqlalchemy import Integer, String, UUID
+from sqlalchemy import UUID, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database.models.base import BaseAlchemyModel
-
 
 
 # TODO: попробовать as_uuid=False и селект не с uuid'ом

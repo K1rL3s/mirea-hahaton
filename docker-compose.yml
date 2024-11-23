@@ -1,5 +1,8 @@
 x-local: &local
   restart: unless-stopped
+  build:
+    context: .
+    dockerfile: Dockerfile
   env_file: .env
   environment:
     PYTHONUNBUFFERED: 1
@@ -21,9 +24,6 @@ services:
   api:
     <<: *local
     container_name: mirea-hahaton-api
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     command: python -m app
@@ -31,18 +31,17 @@ services:
   query:
     <<: *local
     container_name: mirea-hahaton-query
-    build:
-      context: .
-      dockerfile: Dockerfile
     command: python -m query
+
+  scheduler:
+    <<: *local
+    container_name: mirea-hahaton-scheduler
+    command: python -m scheduler
 
   migrations:
     <<: *local
     container_name: mirea-hahaton-migrations
     restart: no
-    build:
-      context: .
-      dockerfile: Dockerfile
     depends_on:
       database:
         condition: service_healthy

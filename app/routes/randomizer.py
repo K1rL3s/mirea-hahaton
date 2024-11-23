@@ -1,7 +1,7 @@
 import random
 import string
 
-from schemas.scan_api import IpSchema, PortSchema, PortsSchema, Vulnerability
+from schemas.scan_api import IpSchema, PortSchema, PortsSchema, VulnerabilitySchema
 
 
 def random_ip() -> str:
@@ -23,8 +23,8 @@ def random_closed_ports() -> list[int]:
     return [random_port() for _ in range(random.randint(1, 16))]
 
 
-def random_vulnerability() -> Vulnerability:
-    return Vulnerability(
+def random_vulnerability() -> VulnerabilitySchema:
+    return VulnerabilitySchema(
         title=random_str(),
         description=random_str(),
         severity=random_str(),
@@ -39,7 +39,7 @@ def random_open_port() -> PortSchema:
         service=random_str(),
         version=random_str(),
         vulnerabilities=[
-            Vulnerability(
+            VulnerabilitySchema(
                 title=random_str(),
                 description=random_str(),
                 severity=random_str(),
