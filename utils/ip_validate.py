@@ -1,7 +1,6 @@
 import re
 from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
 
-
 ipv4_cidr_regex = re.compile(
     r"^([0-9]{1,3}\.){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))?$",
 )

@@ -31,7 +31,9 @@ async def start_scan(
     if isinstance(ips, (IPv4Address, IPv6Address)):
         await broker.publish(
             ScanStart(
-                task_id=task_id, ips=[str(ips)], ipv6=isinstance(ips, IPv6Address),
+                task_id=task_id,
+                ips=[str(ips)],
+                ipv6=isinstance(ips, IPv6Address),
             ),
             subject="scan-start",
         )

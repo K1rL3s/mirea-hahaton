@@ -13,8 +13,8 @@ class ScanResult(BaseAlchemyModel):
 
     id: Mapped[UUID4] = mapped_column(UUID(as_uuid=True), primary_key=True)
     ip: Mapped[str] = Column(String(16), nullable=False, primary_key=True)
-    ptr_record: Mapped[str] = Column(String(1024))
-    severity: Mapped[str] = Column(String(1024))  # Критичность уязвимостей
+    ptr_record: Mapped[str] = Column(String(1024), nullable=True)
+    severity: Mapped[str] = Column(String(1024), nullable=True)
 
     updated_at: Mapped[datetime.datetime] = mapped_column(
         DateTime,
