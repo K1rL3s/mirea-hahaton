@@ -41,8 +41,8 @@ def convert_ip(
         return IPv4Address(left_match[0]), IPv4Address(right_match[0])
     if match := ipv6_regex.match(ip):
         return IPv6Address(match.group())
-    if (len(ips := ip.split(","))) > 1 and all(ipv4_regex.match(ip) for ip in ips):
+    if (len(ips := ip.split())) > 1 and all(ipv4_regex.match(ip) for ip in ips):
         return [IPv4Address(ipv4_regex.match(ip)[0]) for ip in ips]
-    if (len(ips := ip.split(","))) > 1 and all(ipv6_regex.match(ip) for ip in ips):
+    if (len(ips := ip.split())) > 1 and all(ipv6_regex.match(ip) for ip in ips):
         return [IPv6Address(ipv4_regex.match(ip)[0]) for ip in ips]
     return None
