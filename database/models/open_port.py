@@ -17,3 +17,4 @@ class OpenPort(BaseAlchemyModel):
     status: Mapped[str | None] = mapped_column(String(36), nullable=True)
     service: Mapped[str | None] = mapped_column(String(256), nullable=True)
     version: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    reason: Mapped[str | None] = mapped_column(String(128), nullable=True)
