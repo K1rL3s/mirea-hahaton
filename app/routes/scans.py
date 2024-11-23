@@ -1,5 +1,5 @@
 import uuid
-from ipaddress import IPv4Address, IPv4Network, IPv6Address
+from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
@@ -28,22 +28,22 @@ async def start_scan(
 
     task_id = str(uuid.uuid4())
 
-    if isinstance(ips, IPv4Address):
+    if isinstance(ips, (IPv4Address, IPv6Address)):
         await broker.publish(
-            ScanStart(task_id=task_id, ips=[str(ips)], ipv6=False),
+            ScanStart(
+                task_id=task_id, ips=[str(ips)], ipv6=isinstance(ips, IPv6Address),
+            ),
             subject="scan-start",
         )
-    elif isinstance(ips, IPv6Address):
-        await broker.publish(
-            ScanStart(task_id=task_id, ips=[str(ips)], ipv6=True),
-            subject="scan-start",
-        )
-    elif isinstance(ips, IPv4Network):
+    elif isinstance(ips, (IPv4Network, IPv6Network)):
         if ips.num_addresses > 32:
             raise InvalidIPCIDR
-
         await broker.publish(
-            ScanStart(task_id=task_id, ips=[str(ip) for ip in ips], ipv6=False),
+            ScanStart(
+                task_id=task_id,
+                ips=[str(ip) for ip in ips],
+                ipv6=isinstance(ips, IPv6Network),
+            ),
             subject="scan-start",
         )
     elif isinstance(ips, tuple) and len(ips) == 2:
@@ -59,6 +59,15 @@ async def start_scan(
 
         await broker.publish(
             ScanStart(task_id=task_id, ips=[str(ip) for ip in ip_range], ipv6=False),
+            subject="scan-start",
+        )
+    elif isinstance(ips, list):
+        await broker.publish(
+            ScanStart(
+                task_id=task_id,
+                ips=[str(ip) for ip in ips],
+                ipv6=isinstance(ips[0], IPv6Address),
+            ),
             subject="scan-start",
         )
     else:
