@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-from .scans import router as scan_router
 from .convert import router as convert_router
+from .scans import router as scan_router
 
 
 def include_routers(app: FastAPI) -> None:

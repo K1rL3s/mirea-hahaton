@@ -6,7 +6,7 @@ from schemas.base import BaseSchema
 
 
 class ScanRequest(BaseSchema):
-    targets: list[str]
+    ip: str
 
 
 class ScanResponse(BaseSchema):

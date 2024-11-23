@@ -25,7 +25,7 @@ services:
     <<: *local
     container_name: mirea-hahaton-api
     ports:
-      - "8000:8000"
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
     command: python -m app
 
   query:

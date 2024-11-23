@@ -4,7 +4,6 @@ from fastapi import APIRouter, Query
 from schemas.convert_api import ConvertedSchema
 from utils.tool_cy import ip_to_domain
 
-
 router = APIRouter()
 
 

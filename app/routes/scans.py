@@ -1,14 +1,17 @@
 import uuid
+from ipaddress import IPv4Address, IPv4Network, IPv6Address
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Query
 from faststream.nats import NatsBroker
 
+from app.errors.scans import InvalidIP, InvalidIPCIDR, InvalidIPRange
 from app.routes.randomizer import random_ips
 from database.repos.scan_result import ScanResultRepo
 from schemas.scan_api import LastScans, ScanRequest, ScanResponse, ScanTaskResponse
 from schemas.scan_query import ScanStart
+from utils.ip_validate import convert_ip
 
 router = APIRouter()
 
@@ -19,11 +22,48 @@ async def start_scan(
     scan_request: ScanRequest,
     broker: FromDishka[NatsBroker],
 ) -> ScanResponse:
+    ips = convert_ip(scan_request.ip)
+    if ips is None:
+        raise InvalidIP
+
     task_id = str(uuid.uuid4())
-    await broker.publish(
-        ScanStart(task_id=task_id, ips=scan_request.targets),
-        subject="scan-start",
-    )
+
+    if isinstance(ips, IPv4Address):
+        await broker.publish(
+            ScanStart(task_id=task_id, ips=[str(ips)], ipv6=False),
+            subject="scan-start",
+        )
+    elif isinstance(ips, IPv6Address):
+        await broker.publish(
+            ScanStart(task_id=task_id, ips=[str(ips)], ipv6=True),
+            subject="scan-start",
+        )
+    elif isinstance(ips, IPv4Network):
+        if ips.num_addresses > 32:
+            raise InvalidIPCIDR
+
+        await broker.publish(
+            ScanStart(task_id=task_id, ips=[str(ip) for ip in ips], ipv6=False),
+            subject="scan-start",
+        )
+    elif isinstance(ips, tuple) and len(ips) == 2:
+        left, right = int(ips[0]), int(ips[1])
+        ip_range: list[IPv4Address] = []
+
+        if left > right or right - left + 1 > 32:
+            raise InvalidIPRange
+
+        while left <= right:
+            ip_range.append(IPv4Address(left))
+            left += 1
+
+        await broker.publish(
+            ScanStart(task_id=task_id, ips=[str(ip) for ip in ip_range], ipv6=False),
+            subject="scan-start",
+        )
+    else:
+        raise InvalidIP
+
     return ScanResponse(task_id=task_id)
 
 

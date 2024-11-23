@@ -31,8 +31,7 @@ class ScanResultRepo(BaseAlchemyRepo):
 
     async def get_by_ip_and_uuid(self, ip: str, uuid: UUID4) -> ScanResult | None:
         query = select(ScanResult).where(ScanResult.ip == ip, ScanResult.id == uuid)
-        ip = await self.session.scalar(query)
-        return ip
+        return await self.session.scalar(query)
 
     async def get_last_scans(self, limit: int, offset: int) -> list[ScanResult]:
         query = select(ScanResult).order_by(ScanResult.updated_at.desc())
