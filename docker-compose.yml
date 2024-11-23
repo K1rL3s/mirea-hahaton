@@ -60,10 +60,10 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata"
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
+      interval: 15s
+      timeout: 4s
+      retries: 3
+      start_period: 3s
     ports:
       - "5432:5432"
 
@@ -76,10 +76,10 @@ services:
       - mirea-hahaton-volume:/data
     healthcheck:
       test: wget http://localhost:8222/healthz -q -S -O -
-      interval: 14s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
+      interval: 15s
+      timeout: 4s
+      retries: 3
+      start_period: 3s
     ports:
       - "4222:4222" # client port
       - "6222:6222" # cluster port
