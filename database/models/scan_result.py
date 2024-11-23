@@ -1,7 +1,7 @@
 from uuid import UUID as UUID4
 
 from sqlalchemy import UUID, Column, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, mapped_column
 
 from database.models.base import BaseAlchemyModel
 
@@ -14,5 +14,3 @@ class ScanResult(BaseAlchemyModel):
     ip: Mapped[str] = Column(String(16), nullable=False, primary_key=True)
     ptr_record: Mapped[str] = Column(String(1024))
     severity: Mapped[str] = Column(String(1024))  # Критичность уязвимостей
-
-    open_ports: Mapped[int] = relationship("OpenPort", back_populates="scan_result")

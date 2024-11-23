@@ -12,8 +12,8 @@ x-local: &local
       condition: service_healthy
     nats:
       condition: service_started
-#    migrations:
-#      condition: service_completed_successfully
+    migrations:
+      condition: service_completed_successfully
 
 
 services:
@@ -35,6 +35,18 @@ services:
       context: .
       dockerfile: Dockerfile
     command: python -m query
+
+  migrations:
+    <<: *local
+    container_name: mirea-hahaton-migrations
+    restart: no
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      database:
+        condition: service_healthy
+    command: alembic upgrade head
 
   database:
     container_name: mirea-hahaton-database

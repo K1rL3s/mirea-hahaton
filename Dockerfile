@@ -21,5 +21,7 @@ COPY ./app ./app
 COPY ./query ./query
 COPY ./database ./database
 COPY ./di ./di
+COPY ./migrations ./migrations
+COPY ./alembic.ini ./alembic.ini
 COPY ./schemas ./schemas
 COPY ./utils ./utils
