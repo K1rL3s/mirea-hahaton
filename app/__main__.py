@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from app.config import get_api_config
 from app.routes import include_routers
@@ -21,6 +22,13 @@ async def lifespan(app: FastAPI):
 def create_app() -> FastAPI:
     app = FastAPI(lifespan=lifespan)
     include_routers(app)
+    app.add_middleware(
+        CORSMiddleware,  # type: ignore
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     container = make_container(extra_providers=[FastapiProvider()])
     setup_dishka(container, app)
