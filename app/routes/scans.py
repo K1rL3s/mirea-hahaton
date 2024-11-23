@@ -93,7 +93,7 @@ async def get_last_scan(
     scan_repo: FromDishka[ScanResultRepo] = None,
 ) -> list[LastScans]:
     return [
-        LastScans(task_id=scan.id, ip=scan.ip, updated_at=scan.updated_at)
+        LastScans(task_id=str(scan.id), ip=scan.ip, updated_at=scan.updated_at)
         for scan in await scan_repo.get_last_scans(limit=limit, offset=offset)
     ]
 
