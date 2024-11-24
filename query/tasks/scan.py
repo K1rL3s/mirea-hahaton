@@ -15,7 +15,7 @@ from schemas.scan_query import (
     ScanStartSchema,
 )
 
-MAX_WORKERS = 2**5  # 32, т.к. 2 гига 2 ядра
+MAX_WORKERS = 2**4  # 16, т.к. 2 гига 2 ядра и страшно очень
 
 router = NatsRouter()
 

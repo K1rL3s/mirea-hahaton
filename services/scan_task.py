@@ -32,7 +32,12 @@ class ScanTaskService:
                     ports_schema["closed"].append(port.port)
 
             data["ips"].append(
-                {"ip": result.ip, "ptr": result.ptr_record, "ports": ports_schema},
+                {
+                    "ip": result.ip,
+                    "ptr": result.ptr_record,
+                    "ports": ports_schema,
+                    "end": result.end,
+                },
             )
 
         return data
