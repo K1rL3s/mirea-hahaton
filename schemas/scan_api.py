@@ -1,3 +1,5 @@
+import datetime
+
 from pydantic import UUID4, Field
 
 from schemas.base import BaseSchema
@@ -47,4 +49,4 @@ class ScanTaskResponse(BaseSchema):
 class LastScans(BaseSchema):
     task_id: UUID4
     ip: str
-    updated_at: float
+    updated_at: datetime.datetime
