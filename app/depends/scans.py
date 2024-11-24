@@ -26,8 +26,8 @@ async def check_scan_request(scan_request: ScanRequest) -> ScanRequest:
                 raise InvalidSpecificRange
         else:
             ports = scan_request.specific_range.split()
-            for port in ports:
-                if not port.isdigit() and 1 <= int(port) <= 65535:
+            for port in ports:  # 1-65535
+                if not port.isdigit() or int(port) < 1 or int(port) > 65535:
                     raise InvalidSpecificRange
 
     if scan_request.port_range == PortRange.TOP_PORTS:
