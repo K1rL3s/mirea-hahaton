@@ -17,13 +17,13 @@ COPY pyproject.toml ./
 RUN poetry config virtualenvs.create false && \
     poetry install --without dev
 
-COPY ./app ./app
-COPY ./query ./query
-COPY ./scheduler ./scheduler
-COPY ./database ./database
-COPY ./di ./di
-COPY ./migrations ./migrations
+COPY ./src/app ./app
+COPY ./src/query ./query
+COPY ./src/scheduler ./scheduler
+COPY ./src/database ./database
+COPY ./src/di ./di
+COPY ./src/migrations ./migrations
+COPY ./src/schemas ./schemas
+COPY ./src/services ./services
+COPY ./src/utils ./utils
 COPY ./alembic.ini ./alembic.ini
-COPY ./schemas ./schemas
-COPY ./services ./services
-COPY ./utils ./utils
