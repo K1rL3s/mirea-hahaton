@@ -11,13 +11,7 @@ from database.models import VulnerabilityModel
 DBU_XLSX_URL = "https://bdu.fstec.ru/files/documents/vullist.xlsx"
 
 
-async def fetch_xlsx(url: str) -> BytesIO:
-    """
-    Асинхронно загружает XLSX-файл с указанного URL.
-
-    :param url: Ссылка на файл.
-    :return: Буфер в памяти с содержимым файла.
-    """
+async def get_xlsx(url: str) -> BytesIO:
     async with aiohttp.ClientSession() as session:
         async with session.get(url, ssl=False) as response:
             response.raise_for_status()
@@ -26,16 +20,8 @@ async def fetch_xlsx(url: str) -> BytesIO:
 
 
 async def parse_xlsx_to_models(xlsx_buffer: BytesIO) -> list[VulnerabilityModel]:
-    """
-    Парсит XLSX-файл в список SQLAlchemy моделей VulnerabilityModel.
-
-    :param xlsx_buffer: Буфер с содержимым XLSX-файла.
-    :return: Список объектов VulnerabilityModel.
-    """
-    # Читаем файл с пропуском первых двух строк
     df = pd.read_excel(xlsx_buffer, skiprows=2)
 
-    # Создаем список объектов VulnerabilityModel
     vulnerabilities = []
     for _, row in df.iterrows():
         vulnerability = VulnerabilityModel(
@@ -92,7 +78,7 @@ async def process_vulnerabilities(
 ) -> list[VulnerabilityModel]:
     async with container() as request_container:
         session = await request_container.get(AsyncSession)
-        xlsx_buffer = await fetch_xlsx(url)
+        xlsx_buffer = await get_xlsx(url)
         vulnerabilities = await parse_xlsx_to_models(xlsx_buffer)
         await save_vulnerabilities_to_db(vulnerabilities, session)
         return vulnerabilities

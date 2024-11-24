@@ -24,7 +24,7 @@ def parse_discover_open_port(scan_ip: ScanIPSchema, string: str) -> ScanPortSche
         ip=scan_ip.ip,
         port=int(port.split("/")[0]),
         protocol=protocol,
-        state="open"
+        state="open",
     )
 
 

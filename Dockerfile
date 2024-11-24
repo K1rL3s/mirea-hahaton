@@ -25,4 +25,5 @@ COPY ./di ./di
 COPY ./migrations ./migrations
 COPY ./alembic.ini ./alembic.ini
 COPY ./schemas ./schemas
+COPY ./services ./services
 COPY ./utils ./utils

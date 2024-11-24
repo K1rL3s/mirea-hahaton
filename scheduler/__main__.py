@@ -9,11 +9,13 @@ from loguru import logger
 from di.container import make_container
 from scheduler.config import get_scheduler_config
 from scheduler.tasks import include_tasks
-from scheduler.tasks.vullist import process_vulnerabilities
+
+# from scheduler.tasks.vullist import process_vulnerabilities
 
 
 async def run_on_start(container: AsyncContainer) -> None:
-    await process_vulnerabilities(container)
+    return
+    # await process_vulnerabilities(container)
 
 
 async def app() -> None:

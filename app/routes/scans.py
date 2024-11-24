@@ -1,25 +1,15 @@
-import uuid
 from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Query
-from faststream.nats import NatsBroker
 from pydantic import UUID4
 
-from app.errors.scans import InvalidIP, InvalidIPCIDR, InvalidIPRange
-from database.repos.scan_port import ScanPortsRepo
+from app.exceptions.scans import InvalidIP, InvalidIPCIDR, InvalidIPRange
 from database.repos.scan_result import ScanResultRepo
-from schemas.scan_api import (
-    IpSchema,
-    LastScans,
-    PortSchema,
-    PortsSchema,
-    ScanRequest,
-    ScanResponse,
-    ScanTaskResponse,
-)
-from schemas.scan_query import ScanStartSchema
+from schemas.scan_api import LastScans, ScanRequest, ScanResponse, ScanTaskResponse
+from services.scan_start import ScanStartService
+from services.scan_task import ScanTaskService
 from utils.ip_validate import convert_ip
 
 MAX_IP_PER_TASK = 128
@@ -31,65 +21,31 @@ router = APIRouter()
 @inject
 async def start_scan(
     scan_request: ScanRequest,
-    broker: FromDishka[NatsBroker],
+    scan_start_service: FromDishka[ScanStartService],
 ) -> ScanResponse:
     ips = convert_ip(scan_request.ip)
     if ips is None:
         raise InvalidIP
 
-    task_id = str(uuid.uuid4())
-
     if isinstance(ips, (IPv4Address, IPv6Address)):
-        await broker.publish(
-            ScanStartSchema(
-                task_id=task_id,
-                ips=[str(ips)],
-                ipv6=isinstance(ips, IPv6Address),
-            ),
-            subject="scan-start",
-        )
+        task_id = await scan_start_service.start_one_ip(ips)
+
     elif isinstance(ips, (IPv4Network, IPv6Network)):
         if ips.num_addresses > MAX_IP_PER_TASK:
             raise InvalidIPCIDR
-        await broker.publish(
-            ScanStartSchema(
-                task_id=task_id,
-                ips=[str(ip) for ip in ips],
-                ipv6=isinstance(ips, IPv6Network),
-            ),
-            subject="scan-start",
-        )
+        task_id = await scan_start_service.start_ip_network(ips)
+
     elif isinstance(ips, tuple) and len(ips) == 2:
         left, right = int(ips[0]), int(ips[1])
-        ip_range: list[IPv4Address] = []
-
         if left > right or right - left + 1 > MAX_IP_PER_TASK:
             raise InvalidIPRange
+        task_id = await scan_start_service.start_ip_range(ips[0], ips[1])
 
-        while left <= right:
-            ip_range.append(IPv4Address(left))
-            left += 1
-
-        await broker.publish(
-            ScanStartSchema(
-                task_id=task_id,
-                ips=[str(ip) for ip in ip_range],
-                ipv6=False,
-            ),
-            subject="scan-start",
-        )
     elif isinstance(ips, list):
         if len(ips) > MAX_IP_PER_TASK:
             raise InvalidIPRange
+        task_id = await scan_start_service.start_ip_list(ips)
 
-        await broker.publish(
-            ScanStartSchema(
-                task_id=task_id,
-                ips=[str(ip) for ip in ips],
-                ipv6=isinstance(ips[0], IPv6Address),
-            ),
-            subject="scan-start",
-        )
     else:
         raise InvalidIP
 
@@ -113,31 +69,7 @@ async def get_last_scan(
 @inject
 async def get_scan(
     task_id: UUID4,
-    scan_repo: FromDishka[ScanResultRepo],
-    ports_repo: FromDishka[ScanPortsRepo],
+    scan_task_service: FromDishka[ScanTaskService],
 ) -> ScanTaskResponse:
-    scan_result = await scan_repo.get_by_uuid(uuid=task_id)
-    data = {
-        "task_id": task_id,
-        "end": all(result.end for result in scan_result),
-        "ips": [],
-    }
-
-    for result in scan_result:
-        ports = await ports_repo.get_by_uuid_ip(task_id, result.ip)
-        ports_schema = {"open": [], "closed": []}
-        for port in ports:
-            if port.status == "open":
-                ports_schema["open"].append(PortSchema.model_validate(port))
-            else:
-                ports_schema["closed"].append(port.port)
-
-        data["ips"].append(
-            IpSchema(
-                ip=result.ip,
-                ptr=result.ptr_record,
-                ports=PortsSchema.model_validate(ports_schema),
-            ),
-        )
-
+    data = await scan_task_service.response(task_id)
     return ScanTaskResponse.model_validate(data)

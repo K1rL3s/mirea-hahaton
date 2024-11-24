@@ -1,7 +1,7 @@
 import datetime
 from uuid import UUID as UUID4
 
-from sqlalchemy import DateTime, UUID, Boolean, String, func
+from sqlalchemy import UUID, Boolean, DateTime, String, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database.models.base import BaseAlchemyModel

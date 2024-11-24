@@ -15,10 +15,12 @@ from schemas.scan_query import (
     ScanStartSchema,
 )
 
+MAX_WORKERS = 2**6  # 64, т.к. это около двух гигов оперативы
+
 router = NatsRouter()
 
 
-@router.subscriber(subject="scan-start")
+@router.subscriber(subject="scan-start", queue="workers", max_workers=MAX_WORKERS)
 @inject
 async def scan_start_handler(
     scan_start: ScanStartSchema,
@@ -33,7 +35,7 @@ async def scan_start_handler(
         )
 
 
-@router.subscriber(subject="scan-ip")
+@router.subscriber(subject="scan-ip", queue="workers", max_workers=MAX_WORKERS)
 async def scan_ip_handler(scan_ip: ScanIPSchema, broker: NatsBroker) -> None:
     # TODO: сюда можно засунуть вызов nmap'а и публиковать результаты по портам
     process = await asyncio.create_subprocess_exec(
@@ -44,7 +46,7 @@ async def scan_ip_handler(scan_ip: ScanIPSchema, broker: NatsBroker) -> None:
     await read_nmap_stream(process.stdout, broker, scan_ip)
 
 
-@router.subscriber(subject="scan-ip-port")
+@router.subscriber(subject="scan-ip-port", queue="workers", max_workers=MAX_WORKERS)
 @inject
 async def scan_ip_port_handler(
     scan_ip_port: ScanPortSchema,
@@ -53,7 +55,7 @@ async def scan_ip_port_handler(
     await open_ports.create_or_update_from_scan_port_schema(scan_ip_port)
 
 
-@router.subscriber(subject="scan-ip-final")
+@router.subscriber(subject="scan-ip-final", queue="workers", max_workers=MAX_WORKERS)
 @inject
 async def scan_ip_final_handler(
     scan_ip_hostname: ScanResultSchema,

@@ -12,6 +12,7 @@ class ApiConfig(BaseSettings):
     model_config = parse_settings
 
     port: int = Field(default=8000, alias="BACKEND_PORT")
+    workers: int = Field(default=1, alias="BACKEND_WORKERS")
 
 
 def get_api_config() -> ApiConfig:
