@@ -1,5 +1,5 @@
 from schemas.api.scan_api import ScanRequest
-from utils.enums.nmap import PortRange, VersionDetection
+from utils.enums.nmap import PortRange
 
 
 def generate_flags(scan_request: ScanRequest) -> str:

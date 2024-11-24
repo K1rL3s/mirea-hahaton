@@ -61,10 +61,10 @@ async def parse_xml_result(scan_ip: ScanIPSchema, broker: NatsBroker) -> None:
         )
         version = (
             port.find("service").attrib.get("product", "")
-            + ' ' +
-            port.find("service").attrib.get("version", "")
-            + ' ' +
-            port.find("service").attrib.get("extrainfo", "")
+            + " "
+            + port.find("service").attrib.get("version", "")
+            + " "
+            + port.find("service").attrib.get("extrainfo", "")
         ).strip()
         version = version if version else None
         await broker.publish(

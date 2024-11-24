@@ -1,10 +1,6 @@
-from app.exceptions.scans import (
-    InvalidRate,
-    InvalidSpecificRange,
-    InvalidTopPortRange,
-)
+from app.exceptions.scans import InvalidRate, InvalidSpecificRange, InvalidTopPortRange
 from schemas.api.scan_api import ScanRequest
-from utils.enums.nmap import PortRange, VersionDetection
+from utils.enums.nmap import PortRange
 
 
 async def check_scan_request(scan_request: ScanRequest) -> ScanRequest:
