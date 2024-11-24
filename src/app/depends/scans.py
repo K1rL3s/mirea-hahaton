@@ -2,21 +2,12 @@ from app.exceptions.scans import (
     InvalidRate,
     InvalidSpecificRange,
     InvalidTopPortRange,
-    InvalidVersionIntensity,
 )
 from schemas.api.scan_api import ScanRequest
 from utils.enums.nmap import PortRange, VersionDetection
 
 
 async def check_scan_request(scan_request: ScanRequest) -> ScanRequest:
-    if scan_request.version_detection == VersionDetection.VERSION_INTENSITY:
-        if (
-            scan_request.version_intensity_value is None
-            or scan_request.version_intensity_value < 1
-            or scan_request.version_intensity_value > 9
-        ):
-            raise InvalidVersionIntensity
-
     if scan_request.port_range == PortRange.SPECIFIC:
         if scan_request.specific_range is None:
             raise InvalidSpecificRange

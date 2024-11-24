@@ -37,15 +37,6 @@ class InvalidScanSchema(HTTPException):
         super().__init__(status_code, detail=message)
 
 
-class InvalidVersionIntensity(HTTPException):
-    def __init__(
-        self,
-        message: str = "Некорректное значение интенсивности сканирования",
-        status_code: int = 400,
-    ) -> None:
-        super().__init__(status_code, detail=message)
-
-
 class InvalidSpecificRange(HTTPException):
     def __init__(
         self,

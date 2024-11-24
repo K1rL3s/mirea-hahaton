@@ -53,13 +53,20 @@ async def parse_xml_result(scan_ip: ScanIPSchema, broker: NatsBroker) -> None:
         port_id = port.attrib["portid"]
         protocol = port.attrib["protocol"]
         state = port.find("state").attrib["state"]
-        service = port.find("service").attrib["name"]
+        service_name = port.find("service").attrib["name"]
         reason = (
             port.find("state").attrib.get("reason")
             + " "
             + port.find("state").attrib.get("reason_ttl")
         )
-
+        version = (
+            port.find("service").attrib.get("product", "")
+            + ' ' +
+            port.find("service").attrib.get("version", "")
+            + ' ' +
+            port.find("service").attrib.get("extrainfo", "")
+        ).strip()
+        version = version if version else None
         await broker.publish(
             message=ScanPortSchema(
                 task_id=scan_ip.task_id,
@@ -67,7 +74,8 @@ async def parse_xml_result(scan_ip: ScanIPSchema, broker: NatsBroker) -> None:
                 port=int(port_id),
                 protocol=protocol,
                 state=state,
-                service=service,
+                service=service_name,
+                version=version,
                 reason=reason,
             ),
             subject="scan-ip-port",

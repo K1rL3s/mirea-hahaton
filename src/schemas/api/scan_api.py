@@ -26,7 +26,11 @@ class ScanRequest(BaseSchema):
         default=None,
         gt=0,
         lt=10,
-        description="Интенсивность сканирования версии служб. Необходимо, когда используется --version-intensity",
+        description="Интенсивность сканирования версии служб. Включает флаг --version-intensity",
+    )
+    version_all: bool | None = Field(
+        default=True,
+        description="Показывать все версии служб. Включает флаг --version-all.",
     )
     host_discovery: HostDiscovery | None = Field(
         default=None,

@@ -14,7 +14,6 @@ class ScanType(str, Enum):
 class VersionDetection(str, Enum):
     VERSION = "-sV"
     AGGRESSIVE = "-A"
-    VERSION_INTENSITY = "--version-intensity"
 
 
 class HostDiscovery(str, Enum):

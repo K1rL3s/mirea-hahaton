@@ -6,8 +6,10 @@ def generate_flags(scan_request: ScanRequest) -> str:
     flags = f"{scan_request.scan_type.value} "
     if scan_request.version_detection:
         flags += scan_request.version_detection.value + " "
-        if scan_request.version_detection == VersionDetection.VERSION_INTENSITY:
-            flags += str(scan_request.version_intensity_value) + " "
+    if scan_request.version_intensity_value:
+        flags += f"--version-intensity {scan_request.version_intensity_value} "
+    if scan_request.version_all:
+        flags += "--version-all "
     if scan_request.host_discovery:
         flags += scan_request.host_discovery.value + " "
     if scan_request.port_range:
