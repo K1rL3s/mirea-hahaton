@@ -33,25 +33,35 @@ class ScanPortsRepo(BaseAlchemyRepo):
         await self.session.commit()
         return port
 
-    async def get_by_ip_and_uuid_and_port(
+    async def get_by_uuid_ip(
+        self,
+        uuid: UUID4,
+        ip: str,
+    ) -> list[ScanPortModel]:
+        query = sqlalchemy.select(ScanPortModel).where(
+            ScanPortModel.ip == ip,
+            ScanPortModel.id == uuid,
+        )
+        return list(await self.session.scalars(query))
+
+    async def get_by_uuid_ip_port(
         self,
         uuid: UUID4,
         ip: str,
         port: int,
-    ) -> list[ScanPortModel]:
+    ) -> ScanPortModel | None:
         query = sqlalchemy.select(ScanPortModel).where(
             ScanPortModel.ip == ip,
             ScanPortModel.id == uuid,
             ScanPortModel.port == port,
         )
-        ports = await self.session.scalars(query)
-        return list(ports)
+        return await self.session.scalar(query)
 
     async def create_or_update_from_scan_port_schema(
         self,
         scan_port_schema: ScanPortSchema,
     ) -> None:
-        port = await self.get_by_ip_and_uuid_and_port(
+        port = await self.get_by_uuid_ip_port(
             UUID4(scan_port_schema.task_id),
             scan_port_schema.ip,
             scan_port_schema.port,

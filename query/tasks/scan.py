@@ -21,9 +21,9 @@ router = NatsRouter()
 @router.subscriber(subject="scan-start")
 @inject
 async def scan_start_handler(
-        scan_start: ScanStartSchema,
-        broker: NatsBroker,
-        scan_repo: FromDishka[ScanResultRepo]
+    scan_start: ScanStartSchema,
+    broker: NatsBroker,
+    scan_repo: FromDishka[ScanResultRepo],
 ) -> None:
     for ip in scan_start.ips:
         await scan_repo.create(uuid=scan_start.task_id, ip=ip)
@@ -59,4 +59,4 @@ async def scan_ip_final_handler(
     scan_ip_hostname: ScanResultSchema,
     scan_repo: FromDishka[ScanResultRepo],
 ) -> None:
-    await scan_repo.update_from_scan_result_schema(scan_ip_hostname)
+    await scan_repo.update_from_scan_result_schema(scan_ip_hostname, end=True)

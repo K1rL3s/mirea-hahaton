@@ -1,6 +1,4 @@
-import datetime
-
-from pydantic import Field
+from pydantic import UUID4, Field
 
 from schemas.base import BaseSchema
 
@@ -10,7 +8,7 @@ class ScanRequest(BaseSchema):
 
 
 class ScanResponse(BaseSchema):
-    task_id: str
+    task_id: UUID4
 
 
 class VulnerabilitySchema(BaseSchema):
@@ -25,6 +23,7 @@ class PortSchema(BaseSchema):
     protocol: str | None = None
     service: str | None = None
     version: str | None = None
+    reason: str | None = None
     vulnerabilities: list[VulnerabilitySchema] = Field(default_factory=list)
 
 
@@ -35,17 +34,17 @@ class PortsSchema(BaseSchema):
 
 class IpSchema(BaseSchema):
     ip: str
-    ptr: str
+    ptr: str | None = None
     ports: PortsSchema
 
 
 class ScanTaskResponse(BaseSchema):
-    task_id: str
+    task_id: UUID4
     end: bool
     ips: list[IpSchema]
 
 
 class LastScans(BaseSchema):
-    task_id: str
+    task_id: UUID4
     ip: str
-    updated_at: datetime.datetime
+    updated_at: float

@@ -25,13 +25,11 @@ class ScanResultRepo(BaseAlchemyRepo):
 
     async def get_by_uuid(self, uuid: UUID4) -> list[ScanResultModel]:
         query = select(ScanResultModel).where(ScanResultModel.id == uuid)
-        ips = await self.session.scalars(query)
-        return list(ips)
+        return list(await self.session.scalars(query))
 
     async def get_by_ip(self, ip: str) -> list[ScanResultModel]:
         query = select(ScanResultModel).where(ScanResultModel.ip == ip)
-        ips = await self.session.scalars(query)
-        return list(ips)
+        return list(await self.session.scalars(query))
 
     async def get_by_ip_and_uuid(self, ip: str, uuid: UUID4) -> ScanResultModel | None:
         query = select(ScanResultModel).where(
@@ -53,6 +51,7 @@ class ScanResultRepo(BaseAlchemyRepo):
     async def update_from_scan_result_schema(
         self,
         scan_result_schema: ScanResultSchema,
+        end: bool = False,
     ) -> None:
         query = (
             sqlalchemy.update(ScanResultModel)
@@ -63,6 +62,7 @@ class ScanResultRepo(BaseAlchemyRepo):
             .values(
                 ptr_record=scan_result_schema.ptr_record,
                 severity=scan_result_schema.severity,
+                end=end,
             )
         )
 
