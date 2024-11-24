@@ -6,6 +6,7 @@ from faststream.nats.annotations import NatsBroker
 from loguru import logger
 
 from schemas.query.scan_query import ScanIPSchema, ScanPortSchema, ScanResultSchema
+from utils.paths import xml_template
 
 
 def is_discover_open_port(string: str) -> bool:
@@ -30,11 +31,13 @@ def parse_discover_open_port(scan_ip: ScanIPSchema, string: str) -> ScanPortSche
 
 
 async def parse_xml_result(scan_ip: ScanIPSchema, broker: NatsBroker) -> None:
-    if not os.path.exists(f"{scan_ip.task_id}-{scan_ip.ip}.xml"):
+    xml_path = xml_template(f"{scan_ip.task_id}-{scan_ip.ip}.xml")
+
+    if not os.path.exists(xml_path):
         logger.info("break 3")
         return await mark_ip_as_end(scan_ip, broker)
 
-    tree = ET.parse(f"{scan_ip.task_id}-{scan_ip.ip}.xml")
+    tree = ET.parse(xml_path)
     root = tree.getroot()
     host = root.find("host")
     if host.find("status").attrib["state"] == "down":

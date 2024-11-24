@@ -25,5 +25,6 @@ COPY ./src/di ./di
 COPY ./src/migrations ./migrations
 COPY ./src/schemas ./schemas
 COPY ./src/services ./services
+COPY ./src/static ./static
 COPY ./src/utils ./utils
 COPY ./alembic.ini ./alembic.ini

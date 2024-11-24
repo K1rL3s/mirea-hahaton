@@ -24,6 +24,8 @@ services:
   api:
     <<: *local
     container_name: mirea-hahaton-api
+    volumes:
+      - mirea-hahaton-volume:/app/static/xml
     ports:
       - "${BACKEND_PORT}:${BACKEND_PORT}"
     command: python -m app
@@ -31,6 +33,8 @@ services:
   query:
     <<: *local
     container_name: mirea-hahaton-query
+    volumes:
+      - mirea-hahaton-volume:/app/static/xml
     command: python -m query
 
   scheduler:
