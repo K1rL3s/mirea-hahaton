@@ -7,7 +7,7 @@ from faststream.nats.annotations import NatsBroker
 
 from database.repos.scan_port import ScanPortsRepo
 from database.repos.scan_result import ScanResultRepo
-from query.utils.nmap import read_nmap_stream, search_top_command
+from query.utils.nmap import make_nmap_command, read_nmap_stream
 from schemas.scan_query import (
     ScanIPSchema,
     ScanPortSchema,
@@ -30,16 +30,19 @@ async def scan_start_handler(
     for ip in scan_start.ips:
         await scan_repo.create(uuid=scan_start.task_id, ip=ip)
         await broker.publish(
-            message=ScanIPSchema(task_id=scan_start.task_id, ip=ip),
+            message=ScanIPSchema(
+                task_id=scan_start.task_id,
+                ip=ip,
+                flags=scan_start.flags,
+            ),
             subject="scan-ip",
         )
 
 
 @router.subscriber(subject="scan-ip", queue="workers", max_workers=MAX_WORKERS)
 async def scan_ip_handler(scan_ip: ScanIPSchema, broker: NatsBroker) -> None:
-    # TODO: сюда можно засунуть вызов nmap'а и публиковать результаты по портам
     process = await asyncio.create_subprocess_exec(
-        *(search_top_command(scan_ip, 100).split()),  # TODO: Возможность выбора команд
+        *(make_nmap_command(scan_ip).split()),
         stdout=asyncio.subprocess.PIPE,
         stderr=asyncio.subprocess.PIPE,
     )

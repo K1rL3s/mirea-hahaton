@@ -5,12 +5,14 @@ class ScanStartSchema(BaseSchema):
     task_id: str
     ips: list[str]
     ipv6: bool = False
+    flags: str | None = None
 
 
 class ScanIPSchema(BaseSchema):
     task_id: str
     ip: str
     ipv6: bool = False
+    flags: str | None = None
 
 
 class ScanPortSchema(BaseSchema):

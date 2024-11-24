@@ -3,14 +3,67 @@ import datetime
 from pydantic import UUID4, Field
 
 from schemas.base import BaseSchema
+from utils.enums.nmap import (
+    HostDiscovery,
+    PortRange,
+    ScanType,
+    Timing,
+    VersionDetection,
+)
 
 
 class ScanRequest(BaseSchema):
     ip: str
+    scan_type: ScanType = Field(
+        default=ScanType.SYN,
+        description="Тип сканирования (например, SYN или TCP)",
+    )
+    version_detection: VersionDetection | None = Field(
+        default=VersionDetection.VERSION,
+        description="Флаги для определения версии служб",
+    )
+    version_intensity_value: int | None = Field(
+        default=None,
+        gt=0,
+        lt=10,
+        description="Интенсивность сканирования версии служб. Необходимо, когда используется --version-intensity",
+    )
+    host_discovery: HostDiscovery | None = Field(
+        default=None,
+        description="Методы обнаружения хостов",
+    )
+    port_range: PortRange | None = Field(
+        default=PortRange.TOP_PORTS,
+        description="Диапазон портов для сканирования",
+    )
+    specific_range: str | None = Field(
+        default=None,
+        description="Диапазон специфичных портов для сканирования. Необходимо, когда используется -p",
+    )
+    top_range: int | None = Field(
+        gt=0,
+        default=100,
+        description="Количество топ-портов для сканирования. Необходимо, когда используется --top-ports",
+    )
+    timing: Timing | None = Field(
+        default=Timing.NORMAL,
+        description="Уровень таймингов для сканирования. От этого параметра зависит время скнанирования",
+    )
+    min_rate: int | None = Field(
+        gt=0,
+        default=None,
+        description="Минимальная скорость отправки пакетов package/sec",
+    )
+    max_rate: int | None = Field(
+        gt=0,
+        default=None,
+        description="Максимальная скорость отправки пакетов package/sec",
+    )
 
 
 class ScanResponse(BaseSchema):
     task_id: UUID4
+    command: str
 
 
 class VulnerabilitySchema(BaseSchema):
@@ -21,8 +74,8 @@ class VulnerabilitySchema(BaseSchema):
 
 class PortSchema(BaseSchema):
     port: int
-    type: str | None = None
     protocol: str | None = None
+    status: str | None = None
     service: str | None = None
     version: str | None = None
     reason: str | None = None

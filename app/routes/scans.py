@@ -1,16 +1,19 @@
 from ipaddress import IPv4Address, IPv4Network, IPv6Address, IPv6Network
+from typing import Annotated
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from pydantic import UUID4
 
+from app.depends.scans import check_scan_request
 from app.exceptions.scans import InvalidIP, InvalidIPCIDR, InvalidIPRange
 from database.repos.scan_result import ScanResultRepo
 from schemas.scan_api import LastScans, ScanRequest, ScanResponse, ScanTaskResponse
 from services.scan_start import ScanStartService
 from services.scan_task import ScanTaskService
 from utils.ip_validate import convert_ip
+from utils.nmap_generate_flags import generate_flags
 
 MAX_IP_PER_TASK = 128
 
@@ -20,36 +23,37 @@ router = APIRouter()
 @router.post("/scans/")
 @inject
 async def start_scan(
-    scan_request: ScanRequest,
+    scan_request: Annotated[ScanRequest, Depends(check_scan_request)],
     scan_start_service: FromDishka[ScanStartService],
 ) -> ScanResponse:
     ips = convert_ip(scan_request.ip)
+    flags = generate_flags(scan_request)
     if ips is None:
         raise InvalidIP
 
     if isinstance(ips, (IPv4Address, IPv6Address)):
-        task_id = await scan_start_service.start_one_ip(ips)
+        task_id = await scan_start_service.start_one_ip(ips, flags)
 
     elif isinstance(ips, (IPv4Network, IPv6Network)):
         if ips.num_addresses > MAX_IP_PER_TASK:
             raise InvalidIPCIDR
-        task_id = await scan_start_service.start_ip_network(ips)
+        task_id = await scan_start_service.start_ip_network(ips, flags)
 
     elif isinstance(ips, tuple) and len(ips) == 2:
         left, right = int(ips[0]), int(ips[1])
         if left > right or right - left + 1 > MAX_IP_PER_TASK:
             raise InvalidIPRange
-        task_id = await scan_start_service.start_ip_range(ips[0], ips[1])
+        task_id = await scan_start_service.start_ip_range(ips[0], ips[1], flags)
 
     elif isinstance(ips, list):
         if len(ips) > MAX_IP_PER_TASK:
             raise InvalidIPRange
-        task_id = await scan_start_service.start_ip_list(ips)
+        task_id = await scan_start_service.start_ip_list(ips, flags)
 
     else:
         raise InvalidIP
 
-    return ScanResponse(task_id=task_id)
+    return ScanResponse(task_id=task_id, command=("nmap " + flags + scan_request.ip))
 
 
 @router.get("/scans/last/")
