@@ -37,6 +37,7 @@ class PortsSchema(BaseSchema):
 class IpSchema(BaseSchema):
     ip: str
     ptr: str | None = None
+    end: bool
     ports: PortsSchema
 
 
