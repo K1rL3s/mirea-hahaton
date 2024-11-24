@@ -22,7 +22,6 @@ from schemas.scan_api import (
 from schemas.scan_query import ScanStartSchema
 from utils.ip_validate import convert_ip
 
-
 MAX_IP_PER_TASK = 128
 
 router = APIRouter()
@@ -105,11 +104,7 @@ async def get_last_scan(
     scan_repo: FromDishka[ScanResultRepo] = None,
 ) -> list[LastScans]:
     return [
-        LastScans(
-            task_id=str(scan.id),
-            ip=scan.ip,
-            updated_at=scan.updated_at.timestamp(),
-        )
+        LastScans(task_id=str(scan.id), ip=scan.ip, updated_at=scan.updated_at)
         for scan in await scan_repo.get_last_scans(limit=limit, offset=offset)
     ]
 
