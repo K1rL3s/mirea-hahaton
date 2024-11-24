@@ -29,7 +29,7 @@ class ScanRequest(BaseSchema):
         description="Интенсивность сканирования версии служб. Включает флаг --version-intensity",
     )
     version_all: bool | None = Field(
-        default=True,
+        default=False,
         description="Показывать все версии служб. Включает флаг --version-all.",
     )
     host_discovery: HostDiscovery | None = Field(
@@ -50,7 +50,7 @@ class ScanRequest(BaseSchema):
         description="Количество топ-портов для сканирования. Необходимо, когда используется --top-ports",
     )
     timing: Timing | None = Field(
-        default=Timing.NORMAL,
+        default=Timing.AGGRESSIVE,
         description="Уровень таймингов для сканирования. От этого параметра зависит время скнанирования",
     )
     min_rate: int | None = Field(
