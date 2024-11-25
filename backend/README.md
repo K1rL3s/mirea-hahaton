@@ -8,8 +8,8 @@
 1. Склонировать репозиторий и перейти в него:
 
     ```
-    git clone https://github.com/K1rL3s/mirea-hahaton.git git-push-force-backend
-    cd ./git-push-force-backend
+    git clone https://github.com/K1rL3s/mirea-hahaton-2024.git
+    cd ./mirea-hahaton-2024/backend
     ```
 
 2. Создать и заполнить файл `.env` в корневой папке (пример: `.env.example`)
@@ -112,6 +112,6 @@
 
 ## Взаимодействие
 
-![interaction.png](interaction.png)
+![interaction.png](media/interaction.png)
 
-![di-d2.png](di-d2.png)
+![di-d2.png](media/di-d2.png)
