@@ -1,0 +1,11 @@
+services:
+  frontend:
+    container_name: mirea-hahaton-frontend
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8001:80"
+    stdin_open: true
+    tty: true

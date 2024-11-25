@@ -1,0 +1,12 @@
+.portTable {
+  display: grid;
+  grid-template-columns: 1.5fr 1.55fr 3fr 2fr 3fr 4fr;
+  gap: 1rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding: 0.5rem;
+}
+
+.status {
+  white-space: nowrap;
+}

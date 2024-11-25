@@ -1,0 +1,11 @@
+.ul {
+	@apply flex flex-col gap-1.5 mt-8;
+
+	> li {
+		@apply flex items-center gap-4 text-lg font-medium text-secondary;
+
+		&:before {
+			@apply content-[''] block w-6 h-1 bg-primary rounded-full;
+		}
+	}
+}
