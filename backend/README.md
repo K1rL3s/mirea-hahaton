@@ -112,6 +112,6 @@
 
 ## Взаимодействие
 
-![interaction.png](media/interaction.png)
+![interaction.png](content/interaction.png)
 
-![di-d2.png](media/di-d2.png)
+![di-d2.png](content/di-d2.png)

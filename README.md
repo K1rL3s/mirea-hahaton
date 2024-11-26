@@ -24,6 +24,68 @@
 Занимались [Палкин Руслан](https://github.com/rusandorx) и [Перекопский Максим](https://github.com/Wo0zZ1) \
 Оригинал фронта - [тут](https://github.com/rusandorx/mirea-hahaton-frontend)
 
+## Скриншоты
+
+<p align="center">
+  <h3 align="center">
+    Стартовый экран
+  </h3>
+  <img src="./content/start.png" alt="start">
+</p>
+
+<p align="center">
+  <h3 align="center">
+    Последние сканирования
+  </h3>
+  <img src="./content/scan-lasts.png" alt="scan-lasts">
+</p>
+
+<p align="center">
+  <h3 align="center">
+    Инструкция
+  </h3>
+  <img src="./content/instructions.png" alt="instructions">
+</p>
+
+<p align="center">
+  <h3 align="center">
+    Домен в IP
+  </h3>
+  <img src="./content/domain-to-ip.png" alt="domain-to-ip">
+</p>
+
+<p align="center">
+  <h3 align="center">
+    Варианты сканирования
+  </h3>
+  <img src="./content/scan-one.png" alt="scan-one">
+  <img src="./content/scan-multiip.png" alt="scan-multiip">
+  <img src="./content/scan-diap.png" alt="scan-diap">
+  <img src="./content/scan-cidr.png" alt="scan-cidr">
+</p>
+
+<p align="center">
+  <h3 align="center">
+    Расширенные настройки сканирования
+  </h3>
+  <img src="./content/advanced-settings.png" alt="advanced-settings">
+</p>
+
+<p align="center">
+  <h3 align="center">
+    Результаты сканирования
+  </h3>
+  <img src="./content/scan-complete.png" alt="scan-complete">
+  <img src="./content/scan-multi-process.png" alt="scan-multi-process">
+  <img src="./content/scan-multi-complete.png" alt="scan-multi-completes">
+</p>
+
+<p align="center">
+  <h3 align="center">
+    Сваггер
+  </h3>
+  <img src="./content/swagger.png" alt="scan-complete">
+</p>
 
 ## Итоги
 
@@ -31,6 +93,8 @@
 Нас обошла команда [инф](https://github.com/SSSR-HACKATHON-2024/asp-24)о[без](https://github.com/SSSR-HACKATHON-2024/asp-24-gui)ников :)
 
 Спасибо организаторам хакатона и РТУ МИРЭА за невозможность <ins>во время защиты</ins> достучаться <ins>с компов жюри</ins> до лайв-демки из-за косяков внутренней сети <3
+
+[Сам кейс](./content/СКАНИРОВАНИЕ%20ПЕРИМЕТРА%20СЕТИ.pdf)
 
 ## Лицензия
 
